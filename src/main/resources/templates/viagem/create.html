@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{headfragment :: head('Viagens')}"></head>
+<body>
+	<nav th:replace="~{menufragment :: menu}"></nav>
+	<div class="container mt-3">
+		<h3 class="text-center">Criar</h3>
+
+		<ul id="erros">
+		</ul>
+
+		<form class="mt-12" id='form' th:object="${viagem}"
+			action="javascript:void(0);">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="input-group mb-3 input-group-sm">
+						<span class="input-group-text">Primeiro Comandante</span> <input
+							type="text" th:field="*{primeiroComandante}" class="form-control"
+							value="primeiro">
+					</div>
+				</div>
+
+				<div class="col-md-6">
+					<div class="input-group mb-3 input-group-sm">
+						<span class="input-group-text">Nrº da matrícula do primeiro
+							comandante</span> <input type="text"
+							placeholder="Regra para matrícula: XXX-9999-X9X"
+							th:field="*{matriculaPrimeiroComandante}" class="form-control"
+							value="XXX-9999-X9X">
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-6">
+					<div class="input-group mb-3 input-group-sm">
+						<span class="input-group-text">Segundo Comandante</span> <input
+							type="text" th:field="*{segundoComandante}" class="form-control"
+							value="Segundo">
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="input-group mb-3 input-group-sm">
+						<span class="input-group-text">Nrº da matrícula do segundo
+							comandante</span> <input type="text"
+							placeholder="Regra para matrícula: XXX-9999-X9X"
+							th:field="*{matriculaSegundoComandante}" class="form-control"
+							value="XXX-9999-X9X">
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-6">
+					<div class="input-group mb-3 input-group-sm">
+						<span class="input-group-text">Modelo da Nave</span> <input
+							type="text" placeholder="Modelo aaaa-9999" th:field="*{tipoNave}"
+							class="form-control" value="aaaa-9999">
+					</div>
+				</div>
+
+				<div class="col-md-6">
+					<div class="input-group mb-3 input-group-sm">
+						<span class="input-group-text">Quantidade de assentos na
+							nave</span> <input type="number" th:field="*{quantidadeAssentos}"
+							class="form-control" value="1">
+						<div class="invalid-feedback" th:errors="*{quantidadeAssentos}"></div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="input-group mb-3 input-group-sm">
+						<span class="input-group-text">Dias de estadia em Marte</span> <input
+							type="number" th:field="*{duracaoDias}" class="form-control"
+							value="2">
+						<div class="invalid-feedback" th:errors="*{duracaoDias}"></div>
+					</div>
+				</div>
+
+				<div class="col-md-6">
+					<div class="input-group mb-3 input-group-sm">
+						<span class="input-group-text">Data de partida a Marte</span> <input
+							type="date" th:errorclass="is-invalid"
+							th:field="*{dataDecolagem}" class="form-control">
+						<div class="invalid-feedback" th:errors="*{dataDecolagem}"></div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<input class="btn btn-success " type="button" value="Salvar Viagem"
+			onclick="salvar();" />
+	</div>
+</body>
+
+	<script>
+	
+		function validar() {
+			const patternMatricula = /^[A-Z]{3}-\d{4}-[A-Z]\d[A-Z]$/;
+			const matriculaPrimeiroComandante = document.getElementById("matriculaPrimeiroComandante")
+			
+			if(!patternMatricula.test(matriculaPrimeiroComandante.value)) {
+				alert("Favor preencher a matrícula corretamente")
+				matriculaPrimeiroComandante.focus()
+				return true
+			}
+			
+			return false
+		}
+		
+		let responseEntity;
+		
+		function salvar() {
+			if (validar())
+				return;
+
+			const form = document.getElementById('form');
+			const formData = new FormData(form); // create FormData object
+			const jsonBody = JSON.stringify(Object.fromEntries(formData.entries()));
+			var myHeaders = new Headers();
+			myHeaders.append("Content-Type", "application/json");
+
+			var requestOptions = {
+				method: 'POST',
+				headers: myHeaders,
+				body: jsonBody,
+				redirect: 'follow'
+			};
+
+			fetch("/viagem/create", requestOptions)
+				.then(response => {
+					responseEntity = response
+					return response.json()
+				})
+				.then(result => tratarRedirect(result, responseEntity))
+				.catch(error => console.log('error', error));
+		}
+		
+		async function tratarRedirect(data, response) {
+			if (response.ok) {
+				alert('Criado com sucesso')
+					
+				await new Promise(r => setTimeout(r, 2000));
+				window.location.href = "/viagem";
+				return;
+			}
+			let erros = document.getElementById('erros');
+			erros.innerHTML = '';
+			let itemList = '';
+
+			/*if (data.hasOwnProperty('nome'))
+				itemList = `<li class="text-danger">${data.nome}</li>`;
+
+			if (data.hasOwnProperty('idCategoria'))
+				itemList += `<li class="text-danger">${data.idCategoria}</li>`;*/
+
+			erros.innerHTML = itemList;
+		}
+		
+	</script>
+
+</html>

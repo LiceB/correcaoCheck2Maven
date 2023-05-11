@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{headfragment :: head('Viagens')}">
+<body>
+	<nav th:replace="~{menufragment :: menu}"></nav>
+
+	<div class="container-fluid">
+		<h3 class="text-left fs-2 text-center">Lista de viagens</h3>
+		<hr>
+			<a type="button" class="btn btn-info" href='/viagem/create'>Agendar viagem</a>
+		<table id="tbviagem" class="table table-success table-bordered table-lg mt-4">	
+			<thead>
+				<tr>
+					<th>Primeiro Comandante</th>
+					<th>Nrº da matrícula do primeiro comandante</th>
+					<th>Segundo Comandante</th>
+					<th>Nrº da matrícula do segundo comandante</th>
+					<th>Tipo da Nave</th>
+					<th>Quantidade de assentos na nave</th>
+					<th>Dias de estadia em Marte</th>
+					<th>Data de partida a Marte</th>
+					<th>Ação</th>
+				</tr>
+			</thead>
+		
+			<tbody>
+				<tr th:each="viagem : ${listarViagem}">
+					<td th:text="${viagem.getPrimeiroComandante()}">Primeiro Comandante</td>
+					<td th:text="${viagem.getMatriculaPrimeiroComandante()}">Nrº da matrícula do primeiro comandante</td>
+					<td th:text="${viagem.getSegundoComandante()}">Segundo Comandante</td>
+					<td th:text="${viagem.getMatriculaSegundoComandante()}">Nrº da matrícula do segundo comandante</td>
+					<td th:text="${viagem.getTipoNave()}">Tipo da Nave</td>
+					<td th:text="${viagem.getQuantidadeAssentos()}">Quantidade de assentos na nave</td>
+					<td th:text="${viagem.getDuracaoDias()}">Dias de estadia em Marte</td>
+					<td th:text="${viagem.getDataDecolagem()}">Data de partida a Marte</td>
+					<td>
+					<a	th:href="@{/viagem/{viagemId}/edit(viagemId = ${viagem.id})}"
+						class="btn btn-warning mt-1">Editar</a> 
+					<a 	th:href="@{/viagem/{viagemId}/deletar(viagemId = ${viagem.id})}"
+						class="btn btn-danger mt-1">Deletar</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+	</div>
+</body>
+</html>
